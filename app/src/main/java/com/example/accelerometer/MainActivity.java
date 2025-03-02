@@ -36,15 +36,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     MqttAndroidClient client;
 
-
     private TextView xVal, yVal, zVal;
     private Button settings,btnStart, btnStop, btnAboutUs;
 
     Handler mHandler = new Handler();
 
     Runnable mRunnableTask;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +69,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
-
-
-
     @Override
     public void onSensorChanged(SensorEvent event) {
         xVal.setText("X: "+event.values[0]);
@@ -88,16 +82,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void startPublish(View v){
-
         SharedPreferences sharedPref = this.getSharedPreferences("MySharedPref",Context.MODE_PRIVATE);
         String serverURI = sharedPref.getString("serverURI","");
         String clientId = MqttClient.generateClientId();
         client = new MqttAndroidClient(this.getApplicationContext(), serverURI,clientId);
 
-
-
         try {
-
             IMqttToken token = client.connect();
             token.setActionCallback(new IMqttActionListener() {
                 @Override
@@ -120,7 +110,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     // Call this to start the task first time
                     mHandler.postDelayed(mRunnableTask, 5000);
                 }
-
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
@@ -151,8 +140,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //                publish();
 //            }
 //        }, 5000);
-
-
     }
 
     public void publish(){
@@ -165,8 +152,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }catch (MqttException e){
             e.printStackTrace();
         }
-
-
     }
 
     public void stopPublish(View v){
