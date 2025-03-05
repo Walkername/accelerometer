@@ -67,4 +67,8 @@ public class MqttSettings extends AppCompatActivity {
 
     }
 
+    public void closeSettings(View v) {
+        finish();
+    }
+
 }

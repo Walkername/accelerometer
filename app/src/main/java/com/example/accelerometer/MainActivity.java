@@ -26,6 +26,7 @@ import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 
@@ -84,18 +85,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void startPublish(View v){
         SharedPreferences sharedPref = this.getSharedPreferences("MySharedPref",Context.MODE_PRIVATE);
         String serverURI = sharedPref.getString("serverURI","");
+        String userId = sharedPref.getString("Username", "");
+        String userPassword = sharedPref.getString("Password", "");
         String clientId = MqttClient.generateClientId();
-        client = new MqttAndroidClient(this.getApplicationContext(), serverURI,clientId);
+        client = new MqttAndroidClient(this.getApplicationContext(), serverURI, clientId);
+        MqttConnectOptions options = new MqttConnectOptions();
 
         try {
-            IMqttToken token = client.connect();
-            token.setActionCallback(new IMqttActionListener() {
+            options.setUserName(userId);
+            options.setPassword(userPassword.toCharArray());
+            client.connect(options, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     // We are connected
                     Toast.makeText(MainActivity.this,"Connected",Toast.LENGTH_LONG).show();
                     publish();
-
 
                     mRunnableTask = new Runnable()
                     {
@@ -116,7 +120,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     // Something went wrong e.g. connection timeout or firewall problems
                     System.out.print("Connection Failed");
                     Toast.makeText(MainActivity.this,"Connection Failed",Toast.LENGTH_LONG).show();
-
                 }
             });
         } catch (MqttException e) {
@@ -145,10 +148,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void publish(){
         SharedPreferences sharedPref = this.getSharedPreferences("MySharedPref",Context.MODE_PRIVATE);
         String mqttTopic = sharedPref.getString("Topic","");
-        Log.d("Topic",mqttTopic);
-        String message =xVal.getText().toString()+","+yVal.getText().toString()+","+zVal.getText().toString();
+        String userId = sharedPref.getString("Username", "");
+        String publishTopic = "$devices/" + userId + "/" + mqttTopic;
+
+        String message = xVal.getText().toString() + "," + yVal.getText().toString() + "," + zVal.getText().toString();
         try{
-            client.publish(mqttTopic,message.getBytes(),0,false);
+            client.publish(publishTopic, message.getBytes(),0,false);
         }catch (MqttException e){
             e.printStackTrace();
         }

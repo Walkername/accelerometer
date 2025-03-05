@@ -21,11 +21,14 @@ public class AboutUs extends AppCompatActivity {
         btnWeb = findViewById(R.id.btnWeb);
     }
 
-
     public void handleClick (View v){
         Uri uri = Uri.parse("https://3stechlabs.com/");
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(intent);
 
+    }
+
+    public void closeSettings(View v) {
+        finish();
     }
 }
